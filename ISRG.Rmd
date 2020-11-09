@@ -156,4 +156,4 @@ ggplot(data = fcfMgn
     coord_cartesian(ylim = c(0, ylim_max))
 ```
 
-The bar plot shows that it has enough cash profit to fund its business. It does not need to rely on external funding.
+This bar plot shows that it has enough cash profit to fund its business. It does not need to rely on external funding.
