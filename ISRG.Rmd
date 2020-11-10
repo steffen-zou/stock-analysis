@@ -122,7 +122,7 @@ ggplot(data = recurringRevenue
     scale_x_date(breaks = fy_ended
                  , labels = function(x) {format(x, '%Y-%b')}) +
     scale_y_continuous(labels = function(x) {
-        paste(format(x, big.mark = ','), 'M', sep = '')
+        paste('$', format(x, big.mark = ','), 'M', sep = '')
         }) +
     labs(x = 'Fiscal year ended', y = 'Recurring revenue') +
     ggtitle('Recurring revenue segments (2015 to 2019)') +
