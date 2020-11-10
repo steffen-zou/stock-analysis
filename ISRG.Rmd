@@ -132,6 +132,8 @@ ggplot(data = recurringRevenue
 
 Its recurring revenue comes from instruments and accessories, services, and operating lease. Majority of its recurring revenue comes from instruments and accessories.
 
+No single customer accounted for more than 10% of revenue.
+
 
 ## 3. Can The Company Operate Without Relying On External Funding?
 
