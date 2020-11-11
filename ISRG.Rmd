@@ -132,8 +132,6 @@ ggplot(data = recurringRevenue
 
 Its recurring revenue comes from instruments and accessories, services, and operating lease. Majority of its recurring revenue comes from instruments and accessories.
 
-No single customer accounted for more than 10% of revenue.
-
 
 ## 3. Can The Company Operate Without Relying On External Funding?
 
@@ -159,3 +157,16 @@ ggplot(data = fcfMgn
 ```
 
 This bar plot shows that it is able to get cash profit from at least 26.2% of its revenue for the past 3 fiscal years. It also does not have any debt. This shows that it is able to operate without relying on external funding.
+
+
+## Conclusion
+
+From the analysis, it shows that:
+
+* There is demand for the company's products / services.
+* The company has recurring revenue which is about 72% of total revenue.
+* It is able to operate without relying on external funding.
+
+One risk that I noted is that negative publicity, whether accurate or inaccurate, concerning the da Vinci Surgical System could reduce market acceptance of the da Vinci Surgical System and could result in decreased product demand and decline in revenue.
+
+Because of this risk, I limit my allocation to this stock to 2% of my portfolio value.
