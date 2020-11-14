@@ -7,7 +7,9 @@ output:
   html_document: default
 ---
 
-Intuitive Surgical, Inc is known for its da Vinci Surgical Systems. The da Vinci Surgical System is a platform for robotic-assisted surgery, designed to enable complex surgery using a minimally invasive approach. 
+Intuitive Surgical, Inc is the pioneer and a global technology leader in robotic-assisted, minimally invasive surgery.
+
+Its main product is the da Vinci Surgical System, which is a platform for robotic-assisted surgery, designed to enable complex surgery using a minimally invasive approach. Compared to traditional open procedures that require large incisions, robotic surgery uses a few small incisions.
 
 I will explore the company's financial data to find out the following:
 
