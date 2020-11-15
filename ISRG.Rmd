@@ -13,13 +13,15 @@ Its main product is the da Vinci Surgical System, which is a platform for roboti
 
 I will explore the company's financial data to find out the following:
 
-1. Is there demand for its products / services?
-2. Does it have recurring revenue?
+1. Does it have recurring revenue?
+2. Is there growing demand for its products / services?
 3. Can the company operate without relying on external funding?
 
 ```{r message=FALSE, echo=FALSE}
 library(readxl)
 library(dplyr)
+library(ggplot2)
+library(lubridate)
 
 financial <- read_excel('ISRG.xlsx', sheet = 'overall')
 recurringRevenue <- read_excel('ISRG.xlsx', sheet = 'recurring revenue')
@@ -38,6 +40,23 @@ financial$yoy_gross_profit_growth <- yoy_gross_profit_growth
 financial$proportion_recurring <- with(financial
                                        , recurring_revenue / total_revenue)
 
+# Calculate recurring revenue segment as proportion of total recurring revenue
+totalRecurring <- select(financial, fiscal_year_ended
+                         , total_recurring_revenue = recurring_revenue)
+recurringRevenue <- 
+  inner_join(recurringRevenue, totalRecurring
+                               , by = 'fiscal_year_ended') %>%
+  mutate(proportion = recurring_revenue / total_recurring_revenue)
+
+# Calculate year-over-year recurring revenue growth for each segment
+recurr_current <- 
+  recurringRevenue$recurring_revenue[1:(nrow(recurringRevenue)-3)]
+recurr_prev <- 
+  recurringRevenue$recurring_revenue[-(1:3)]
+yoy_recurr_growth <- c(recurr_current / recurr_prev - 1, NA, NA, NA)
+
+recurringRevenue$yoy_growth <- yoy_recurr_growth
+
 # Calculate free cash flow and free cash flow margin
 financial <- 
     mutate(financial
@@ -46,37 +65,7 @@ financial <-
 ```
 
 
-## 1. Is There Demand For Its Products / Services?
-
-```{r fig.width=5, echo=FALSE}
-library(ggplot2)
-
-demand <- 
-    head(financial, n = 3) %>%
-    select(fiscal_year_ended, yoy_gross_profit_growth)
-
-ylim_max <- max(demand$yoy_gross_profit_growth) * 1.04
-
-ggplot(data = demand
-       , aes(x = format(fiscal_year_ended, '%Y-%b')
-             , y = yoy_gross_profit_growth)) +
-    geom_col(fill = '#99ccff') +
-    labs(x = 'Fiscal year ended', y = 'Year-over-year gross profit growth') +
-    ggtitle('Year-over-year gross profit growth (2017 to 2019)') +
-    theme_minimal() +
-    geom_text(aes(label = paste(round(yoy_gross_profit_growth * 100, 1)
-                                , '%', sep = ''))
-              , vjust = -0.6, size = 3.3) +
-    coord_cartesian(ylim = c(0, ylim_max)) +
-    theme(panel.grid = element_blank()
-          , plot.title = element_text(hjust = 0.5)
-          , axis.text.y = element_blank())
-```
-
-From this bar plot, it shows that the year-over-year gross profit growth is at least 16.3% for the past 3 fiscal years, and that the growth is accelerating. This shows that there is demand for the company's products / services.
-
-
-## 2. Does It Have Recurring Revenue?
+## 1. Does It Have Recurring Revenue?
 
 ```{r fig.width=5, echo=FALSE}
 recurring <-
@@ -106,33 +95,58 @@ ggplot(data = recurring
 From this bar plot, it shows that the company has recurring revenue which is about 72% of total revenue.
 
 ```{r echo=FALSE}
-fy_ended <- with(recurringRevenue
-                 , as.Date(c(min(fiscal_year_ended)
-                             , max(fiscal_year_ended))) )
+recurringProportion <- 
+  recurringRevenue %>% 
+  filter(fiscal_year_ended >= ymd(20170101))
 
-recurringRevenue$segment <- 
-    factor(recurringRevenue$segment
-           , levels = c('Instruments and accessories', 'Services'
-                        , 'Operating lease'))
-
-ggplot(data = recurringRevenue
-       , aes(x = as.Date(fiscal_year_ended), y = recurring_revenue
-             , color = segment)) +
-    geom_line(size = 1) +
-    geom_point() +
-    theme_light() +
-    scale_x_date(breaks = fy_ended
-                 , labels = function(x) {format(x, '%Y-%b')}) +
-    scale_y_continuous(labels = function(x) {
-        paste('$', format(x, big.mark = ','), 'M', sep = '')
-        }) +
-    labs(x = 'Fiscal year ended', y = 'Recurring revenue') +
-    ggtitle('Recurring revenue segments (2015 to 2019)') +
-    theme(plot.title = element_text(hjust = 0.5)
-          , panel.grid = element_blank())
+ylim_max <- max(recurringProportion$proportion) * 1.05
+  
+ggplot(data = recurringProportion
+       , aes(x = segment, y = proportion, fill = segment)) +
+  geom_col() +
+  facet_grid(cols = vars(format(fiscal_year_ended, '%Y'))) +
+  geom_text(aes(label = paste(round(proportion * 100, 1), '%', sep = ''))
+            , vjust = -0.6, size = 3) +
+  labs(x = '', y = 'Proportion of recurring revenue') +
+  ggtitle('Segment as proportion of recurring revenue') +
+  theme(axis.text = element_blank()
+        , axis.ticks = element_blank()
+        , plot.title = element_text(hjust = 0.5)
+        , panel.grid = element_blank()) +
+  coord_cartesian(ylim = c(0, ylim_max))
 ```
 
-Its recurring revenue comes from instruments and accessories, services, and operating lease. Majority of its recurring revenue comes from instruments and accessories.
+Its recurring revenue comes from instruments and accessories, services, and operating lease. 74.3% of its recurring revenue comes from instruments and accessories.
+
+
+## 3. Is There Growing Demand For Its Products / Services?
+
+```{r echo=FALSE}
+recurringRevenueGrowth <- 
+  recurringRevenue %>% 
+  filter(fiscal_year_ended >= ymd(20170101)) %>%
+  select(fiscal_year_ended, segment, yoy_growth)
+
+ylim_max <- max(recurringRevenueGrowth$yoy_growth) * 1.05
+
+ggplot(data = recurringRevenueGrowth
+       , aes(x = format(fiscal_year_ended, '%Y'), y = yoy_growth
+             , fill = segment)) +
+  geom_col() +
+  facet_wrap(vars(segment)) +
+  labs(x = 'Fiscal year', y = 'Year-over-year growth') +
+  ggtitle('Year-over-year growth for each recurring revenue segment') +
+  geom_text(aes(label = paste(round(yoy_growth * 100, 1), '%', sep = ''))
+            , vjust = -0.6, size = 3.3) +
+  coord_cartesian(ylim = c(0, ylim_max)) +
+  theme(legend.position = 'none'
+        , plot.title = element_text(hjust = 0.5)
+        , panel.grid = element_blank()
+        , axis.text.y = element_blank()
+        , axis.ticks.y = element_blank())
+```
+
+From this bar plot, it shows that there is growing demand for the company's products / services. "Instruments and accessories" and "operating lease" segments have accelerating growth in the demand.
 
 
 ## 3. Can The Company Operate Without Relying On External Funding?
@@ -165,8 +179,8 @@ This bar plot shows that it is able to get cash profit from at least 26.2% of it
 
 From the analysis, it shows that:
 
-* There is demand for the company's products / services.
 * The company has recurring revenue which is about 72% of total revenue.
+* There is growing demand for the company's products / services.
 * It is able to operate without relying on external funding.
 
 One risk that I noted is that negative publicity, whether accurate or inaccurate, concerning the da Vinci Surgical System could reduce market acceptance of the da Vinci Surgical System and could result in decreased product demand and decline in revenue.
