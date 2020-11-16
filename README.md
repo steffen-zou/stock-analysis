@@ -6,4 +6,4 @@ Intuitive Surgical, Inc
 * [ISRG.Rmd](https://github.com/steffen-zou/stock-analysis/blob/master/ISRG.Rmd) (R code)
 * [Other](https://public.tableau.com/profile/steffen.zou.weilun#!/vizhome/AnalysisOfIntuitiveSurgicalsPastFinancialResult/StockAnalysisOfIntuitiveSurgicalInc) (Tableau data story)
 * [ISRG.xlsx](https://github.com/steffen-zou/stock-analysis/raw/master/ISRG.xlsx) (Dataset)
-* [ISRG-CodeBook.md](https://github.com/steffen-zou/stock-analysis/blob/master/ISRG-CodeBook.md) (Code book)
+* [ISRG-CodeBook.md](https://github.com/steffen-zou/stock-analysis/blob/master/ISRG-CodeBook.md) (Codebook)
