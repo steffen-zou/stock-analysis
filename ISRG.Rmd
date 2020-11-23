@@ -57,6 +57,16 @@ yoy_recurr_growth <- c(recurr_current / recurr_prev - 1, NA, NA, NA)
 
 recurringRevenue$yoy_growth <- yoy_recurr_growth
 
+# Calculate whether meet growth KPI
+growth_kpi <- 0.1
+
+recurringRevenue <- 
+  mutate(recurringRevenue
+         , met_growth_KPI = case_when(
+             yoy_growth >= growth_kpi ~ 'Yes'
+           , yoy_growth < growth_kpi ~ 'No'
+         ))
+
 # Calculate free cash flow and free cash flow margin
 financial <- 
     mutate(financial
@@ -121,29 +131,34 @@ Its recurring revenue comes from instruments and accessories, services, and oper
 
 ## 3. Is There Growing Demand For Its Products / Services?
 
-```{r echo=FALSE}
+```{r fig.width=7,echo=FALSE}
 recurringRevenueGrowth <- 
   recurringRevenue %>% 
   filter(fiscal_year_ended >= ymd(20170101)) %>%
-  select(fiscal_year_ended, segment, yoy_growth)
+  select(fiscal_year_ended, segment, yoy_growth, met_growth_KPI)
 
 ylim_max <- max(recurringRevenueGrowth$yoy_growth) * 1.05
+hline_label <- '10% growth 
+requirement'
 
 ggplot(data = recurringRevenueGrowth
-       , aes(x = format(fiscal_year_ended, '%Y'), y = yoy_growth
-             , fill = segment)) +
-  geom_col() +
+       , aes(x = format(fiscal_year_ended, '%Y'), y = yoy_growth)) +
+  geom_col(aes(fill = met_growth_KPI), show.legend = FALSE) +
   facet_wrap(vars(segment)) +
-  labs(x = 'Fiscal year', y = 'Year-over-year growth') +
+  labs(x = 'Fiscal year', y = 'Year-over-year growth', colour = NULL) +
   ggtitle('Year-over-year growth for each recurring revenue segment') +
   geom_text(aes(label = paste(round(yoy_growth * 100, 1), '%', sep = ''))
             , vjust = -0.6, size = 3.3) +
   coord_cartesian(ylim = c(0, ylim_max)) +
-  theme(legend.position = 'none'
-        , plot.title = element_text(hjust = 0.5)
+  theme(plot.title = element_text(hjust = 0.5)
         , panel.grid = element_blank()
         , axis.text.y = element_blank()
-        , axis.ticks.y = element_blank())
+        , axis.ticks.y = element_blank()) +
+  geom_hline(aes(color = hline_label
+                 , yintercept = growth_kpi)) +
+  scale_color_manual(values = c('black')) +
+  scale_fill_manual(values = c('Yes' = '#99ccff', 'No' = 'red'))
+  
 ```
 
 From this bar plot, it shows that there is growing demand for the company's products / services. "Instruments and accessories" and "operating lease" segments have accelerating growth in the demand.
