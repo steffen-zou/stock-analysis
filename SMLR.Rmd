@@ -87,7 +87,11 @@ ggplot(data = recurring
               , vjust = -0.7, size = 3.1)
 ```
 
-From this bar plot, it shows that the company has recurring revenue which is about 97% of total revenue. The recurring revenue is from fees for use of its vascular testing product. The fees are usually billed as a fixed monthly fee or as a variable monthly fee dependent on usage.
+From this bar plot, it shows that the company has recurring revenue which is about 97% of total revenue. 
+
+The recurring revenue is from fees for use of its vascular testing product. 
+
+The fees are usually billed as a fixed monthly fee or as a variable monthly fee dependent on usage.
 
 
 ## 2. Is There Growing Demand For Its Products / Services?
@@ -152,7 +156,11 @@ ggplot(data = fcfte_margins
           , plot.title = element_text(hjust = 0.5))
 ```
 
-From this bar plot, it shows that the company's free cash flow to equity margin is negative in fiscal year 2017, then trending upwards to positive in fiscal year 2018 and 2019. The company has been repaying debt until fiscal year 2018. Currently it is free of debt. This shows that it is able to operate without relying on external funding.
+From this bar plot, it shows that the company's free cash flow to equity margin is negative in fiscal year 2017, then trending upwards to positive in fiscal year 2018 and 2019. 
+
+The company has been repaying debt until fiscal year 2018. Currently it is free of debt. 
+
+This shows that it is able to operate without relying on external funding.
 
 
 ## Conclusion
