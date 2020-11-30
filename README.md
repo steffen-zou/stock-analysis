@@ -12,5 +12,6 @@ Semler Scientific, Inc
 
 * [SMLR.pdf](https://github.com/steffen-zou/stock-analysis/blob/master/SMLR.pdf) (Analysis report)
 * [SMLR.Rmd](https://github.com/steffen-zou/stock-analysis/blob/master/SMLR.Rmd) (R code)
+* [Other](https://public.tableau.com/profile/steffen.zou.weilun#!/vizhome/StockAnalysisOfSemlerScientificInc/StockAnalysisOfSemlerScientificInc) (Tableau data story)
 * [SMLR.xlsx](https://github.com/steffen-zou/stock-analysis/raw/master/SMLR.xlsx) (Dataset)
 * [SMLR-Codebook.md](https://github.com/steffen-zou/stock-analysis/blob/master/SMLR-Codebook.md) (Codebook)
