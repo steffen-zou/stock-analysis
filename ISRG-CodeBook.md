@@ -16,11 +16,11 @@ The below data are noted from "Financial Statements and Supplementary Data" sect
 The recurring revenue data is noted from "Management’s Discussion and Analysis of Financial Condition and Results of Operations" section under "Total Revenue" subsection.
 
 1. **fiscal year ended**: Fiscal year ended.
-2. **total revenue**: Total revenue, in millions.
-3. **gross profit**: Gross profit, in millions.
-4. **operating cash flow**: Net cash provided by operating activities, in millions.
-5. **capital expenditure**: Capital expenditure. Noted from "Purchase of property, plant, and equipment and intellectual property", in millions.
-6. **recurring revenue**: Total recurring revenue, in millions.
+2. **total revenue**: Total revenue, in millions of U.S. Dollars.
+3. **gross profit**: Gross profit, in millions of U.S. Dollars.
+4. **operating cash flow**: Net cash provided by operating activities, in millions of U.S. Dollars.
+5. **capital expenditure**: Capital expenditure, in millions of U.S. Dollars. Noted from "Purchase of property, plant, and equipment and intellectual property".
+6. **recurring revenue**: Total recurring revenue, in millions of U.S. Dollars.
 
 ### recurring revenue
 
@@ -28,4 +28,4 @@ The recurring revenue data is noted from "Management’s Discussion and Analysis
 
 1. **fiscal year ended**: Fiscal year ended.
 2. **segment**: Recurring revenue segment.
-3. **recurring revenue**: Recurring revenue, in millions.
+3. **recurring revenue**: Recurring revenue, in millions of U.S. Dollars.
