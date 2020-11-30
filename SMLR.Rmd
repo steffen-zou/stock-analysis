@@ -1,0 +1,168 @@
+---
+title: "Stock Analysis Of Semler Scientific, Inc"
+author: "Steffen Zou Weilun"
+date: "November 30, 2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Semler Scientific, Inc provides technology solutions to improve the clinical effectiveness and efficiency of healthcare providers. It currently has one product, QuantaFlo®, which measures arterial blood flow in the extremities to aid in the diagnosis of peripheral arterial disease (PAD).
+
+It competes with the standard blood pressure cuff ABI (ankle brachial index) device, which requires a vascular technician for the tests to be done properly, and often unable to measure for obese patients and patients with non-compressible, hard, calcified arteries.
+
+QuantaFlo® is able to measure without blood pressure in obese patients and patients with non-compressible, hard, calcified arteries. Sensor clamps are placed on both large toes and both index fingers. They emit infrared light, which is reflected by the red blood cells and sensed by the sensor. A hardcopy report form is generated that displays four blood flow waveforms constructed by the company's proprietary software algorithm, and the ratio of each leg measurement compared with the arms. Results are classified as Flow Obstruction or No Flow Obstruction.
+
+I will explore the company's financial data to find out the following:
+
+1. Does it have recurring revenue?
+2. Is there growing demand for its products / services?
+3. Can the company operate without relying on external funding?
+
+```{r message=FALSE,echo=FALSE}
+library(readxl)
+library(ggplot2)
+library(dplyr)
+
+financial <- read_excel('SMLR.xlsx', sheet = 'Financial')
+names(financial) <- gsub(' ', '_', names(financial))
+
+# Calculate recurring revenue as proportion of total revenue
+financial$proportion_recurring <- with(financial
+                                       , recurring_revenue / total_revenue)
+
+# Calculate year-over-year recurring revenue growth
+yoy_recur_revenue_growth <- with(financial
+                                 , recurring_revenue[-nrow(financial)] / 
+                                     recurring_revenue[-1] - 1)
+
+yoy_recur_revenue_growth <- c(yoy_recur_revenue_growth, NA)
+financial$yoy_recur_revenue_growth <- yoy_recur_revenue_growth
+
+# Calculate whether meet growth KPI
+growth_kpi <- 0.1
+
+financial <- mutate(financial
+                    , met_growth_KPI = case_when(
+                        yoy_recur_revenue_growth >= growth_kpi ~ 'Yes'
+                        , yoy_recur_revenue_growth < growth_kpi ~ 'No'
+                    ))
+
+# Calculate free cash flow to equity margin
+financial <- mutate(financial
+                    , free_cash_flow = operating_cash_flow - 
+                        capital_expenditure
+                    , fcf_margin = free_cash_flow / total_revenue
+                    , free_cash_flow_to_equity = free_cash_flow + 
+                        debt_issued - debt_repayment
+                    , fcfte_margin = free_cash_flow_to_equity / total_revenue
+                    , is_fcfte_margin_positive = ifelse(fcfte_margin >= 0
+                                                        , TRUE, FALSE))
+```
+
+## 1. Does It Have Recurring Revenue?
+
+```{r fig.width=5,echo=FALSE}
+recurring <-
+    head(financial, n = 3) %>%
+    select(fiscal_year_ended, proportion_recurring)
+
+ylim_max <- max(recurring$proportion_recurring) * 1.04
+title <- 'Recurring revenue as proportion of total revenue 
+(2017 to 2019)'
+
+ggplot(data = recurring
+       , aes(x = format(fiscal_year_ended, '%Y-%b')
+             , y = proportion_recurring)) +
+    geom_col(fill = '#99ccff') +
+    labs(x = 'Fiscal year ended', y = 'Proportion of total revenue') +
+    ggtitle(title) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5)
+          , panel.grid = element_blank()
+          , axis.text.y = element_blank()) +
+    coord_cartesian(ylim = c(0, ylim_max)) +
+    geom_text(aes(label = paste(round(proportion_recurring * 100, 1)
+                                , '%', sep = ''))
+              , vjust = -0.7, size = 3.1)
+```
+
+From this bar plot, it shows that the company has recurring revenue which is about 97% of total revenue. The recurring revenue is from fees for use of its vascular testing product. The fees are usually billed as a fixed monthly fee or as a variable monthly fee dependent on usage.
+
+
+## 2. Is There Growing Demand For Its Products / Services?
+
+```{r echo=FALSE}
+demand <- 
+    head(financial, n = 3) %>%
+    select(fiscal_year_ended, yoy_recur_revenue_growth, met_growth_KPI)
+
+ylim_max <- max(demand$yoy_recur_revenue_growth) * 1.05
+title <- 'Year-over-year recurring revenue growth
+(2017 to 2019)'
+hline_label <- '10% growth requirement'
+
+ggplot(data = demand
+       , aes(x = format(fiscal_year_ended, '%Y-%b')
+             , y = yoy_recur_revenue_growth)) +
+    geom_col(aes(fill = met_growth_KPI), show.legend = FALSE) +
+    labs(x = 'Fiscal year ended'
+         , y = 'Year-over-year growth') +
+    ggtitle(title) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5)
+          , panel.grid = element_blank()
+          , axis.text.y = element_blank()
+          , legend.title = element_blank()) +
+    geom_text(aes(label = paste(round(yoy_recur_revenue_growth * 100, 1)
+                                , '%', sep = ''))
+              , vjust = -0.7, size = 3.1) +
+    coord_cartesian(ylim = c(0, ylim_max)) +
+    scale_fill_manual(values = c('Yes' = '#99ccff', 'No' = 'red')) +
+    geom_hline(aes(color = hline_label
+                 , yintercept = growth_kpi)) +
+    scale_color_manual(values = c('black'))
+```
+
+From this bar plot, it shows that for each of the past 3 fiscal years, there is at least 50.9% growth in demand for the company's products / services.
+
+
+## 3. Can The Company Operate Without Relying On External Funding?
+
+```{r fig.width=5,echo=FALSE}
+fcfte_margins <-
+    head(financial, n = 3) %>%
+    select(fiscal_year_ended, fcfte_margin, is_fcfte_margin_positive)
+
+title <- 'Free cash flow to equity margin (2017 to 2019)'
+
+ggplot(data = fcfte_margins
+       , aes(x = format(fiscal_year_ended, '%Y-%b'), y = fcfte_margin)) +
+    geom_col(aes(fill = is_fcfte_margin_positive), show.legend = FALSE) +
+    labs(x = 'Fiscal year ended', y = 'Free cash flow to equity margin') +
+    ggtitle(title) +
+    geom_text(aes(label = paste(round(fcfte_margin * 100, 1)
+                                , '%', sep = '')
+                  , y = fcfte_margin + sign(fcfte_margin) * 0.013)
+              , size = 3.1) +
+    scale_fill_manual(values = c('TRUE' = '#99ccff', 'FALSE' = '#ffad33')) +
+    theme_minimal() +
+    theme(panel.grid = element_blank()
+          , axis.text.y = element_blank()
+          , plot.title = element_text(hjust = 0.5))
+```
+
+From this bar plot, it shows that the company's free cash flow to equity margin is negative in fiscal year 2017, then trending upwards to positive in fiscal year 2018 and 2019. The company has been repaying debt until fiscal year 2018. Currently it is free of debt. This shows that it is able to operate without relying on external funding.
+
+
+## Conclusion
+
+From the analysis, it shows that:
+
+* The company has recurring revenue which is about 97% of total revenue.
+* There is growing demand for the company's products / services.
+* It is able to operate without relying on external funding.
+
+The biggest risk that I noted is that three customers account for a significant portion of the company's revenues. For the year ended December 31, 2019, three customers accounted for 49.4%, 13.2%, and 12.5% of revenues. If its largest customers were to cease using the company's vascular testing devices, it would have a material adverse effect on the revenues.
+
+Because of this risk, I limit my allocation to this stock to 2% of my portfolio value.
